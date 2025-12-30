@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+    tags:
+      - '*'  # 当 push tag 时触发 Release（可改为 'v*' 只匹配版本 tag）
   pull_request:
     branches:
       - main
@@ -12,6 +14,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # 允许创建 GitHub Release
 
     steps:
       - name: Checkout 代码
@@ -66,10 +70,23 @@ jobs:
           echo "=== 已生成的签名 APK 文件 ==="
           find app/build/outputs/apk -name "*.apk" -ls || echo "未找到任何 APK，请检查上一步构建是否成功"
 
-      # 步骤4：上传所有生成的签名 APK（一个 artifact 包含全部）
+      # 步骤4：上传所有生成的签名 APK（一个 artifact 包含全部，用于非 tag 场景）
       - name: 上传所有签名后的 APK
         uses: actions/upload-artifact@v4
         with:
           name: myVideo-All-Variants-Signed-APKs
           path: app/build/outputs/apk/**/*.apk
-          if-no-files-found: error   # 如果真没找到，直接报错便于排查
+          if-no-files-found: error
+
+      # 新增步骤：当 push tag 时，创建 GitHub Release 并上传所有 APK 作为资产
+      - name: 创建 GitHub Release 并上传 APK（仅在 tag push 时执行）
+        if: startsWith(github.ref, 'refs/tags/')  # 只在 tag push 时运行
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "app/build/outputs/apk/**/*.apk"  # 上传所有变体的 APK
+          token: ${{ secrets.GITHUB_TOKEN }}  # 默认 PAT，使用 workflow 的内置 token 即可
+          draft: false
+          prerelease: false
+          allowUpdates: false  # 如果已有同名 tag 的 Release，可改为 true 更新它
+          # 可选：添加 Release 描述（body），例如从 CHANGELOG.md 读取
+          # bodyFile: "CHANGELOG.md"
