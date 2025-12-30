@@ -61,15 +61,15 @@ jobs:
             -Pandroid.injected.signing.key.password=${{ secrets.KEY_PASSWORD }}
 
       # 步骤3：列出生成的 APK（调试用，必看）
-      - name: 列出所有生成的 myVideo APK
+      - name: 列出所有生成的 APK
         run: |
           echo "=== 已生成的签名 APK 文件 ==="
-          find app/build/outputs/apk -name "myVideo_*.apk" -ls || echo "未找到任何 APK，请检查上一步构建是否成功"
+          find app/build/outputs/apk -name "*.apk" -ls || echo "未找到任何 APK，请检查上一步构建是否成功"
 
       # 步骤4：上传所有生成的签名 APK（一个 artifact 包含全部）
-      - name: 上传所有签名后的 myVideo APK
+      - name: 上传所有签名后的 APK
         uses: actions/upload-artifact@v4
         with:
           name: myVideo-All-Variants-Signed-APKs
-          path: app/build/outputs/apk/**/myVideo_*.apk
+          path: app/build/outputs/apk/**/*.apk
           if-no-files-found: error   # 如果真没找到，直接报错便于排查
