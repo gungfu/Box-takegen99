@@ -76,7 +76,7 @@ public class JarLoader {
         return "com.github.tvbox.osc.tk";  // ← 改成你想要的固定包名
     }
 };
-initMethod.invoke(null, wrappedContext);
+//initMethod.invoke(null, wrappedContext);
                                     //initMethod.invoke(null, App.getInstance());
                                 } catch (Exception e) {
                                     e.printStackTrace();
