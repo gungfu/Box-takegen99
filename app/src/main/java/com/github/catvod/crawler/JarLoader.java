@@ -1,10 +1,8 @@
-
 package com.github.catvod.crawler;
 
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.util.Log;
-
 
 import com.github.tvbox.osc.base.App;
 import com.github.tvbox.osc.util.FileUtils;
@@ -70,17 +68,17 @@ public class JarLoader {
                             @Override
                             public void run() {
                                 try {
-					Context wrappedContext = new ContextWrapper(App.getInstance()) {
-    @Override
-    public String getPackageName() {
-        return "com.github.tvbox.osc.tk";  // ← 改成你想要的固定包名
-    }
-};
-if ("main".equals(key)) {
-initMethod.invoke(null, App.getInstance());
-} else {
-initMethod.invoke(null, wrappedContext);
-}
+                                    Context wrappedContext = new ContextWrapper(App.getInstance()) {
+                                        @Override
+                                        public String getPackageName() {
+                                            return "com.github.tvbox.osc.tk";  // ← 改成你想要的固定包名
+                                        }
+                                    };
+                                    if ("main".equals(key)) {
+                                        initMethod.invoke(null, App.getInstance());
+                                    } else {
+                                        initMethod.invoke(null, wrappedContext);
+                                    }
                                     //initMethod.invoke(null, App.getInstance());
                                 } catch (Exception e) {
                                     e.printStackTrace();
